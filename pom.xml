@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.quotescoins</groupId>
-    <artifactId>quotes-coins</artifactId>
+    <artifactId>ee-test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -82,30 +82,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <!-- The WildFly plugin deploys your ear to a local JBoss AS container -->
-                <!-- Due to Maven's lack of intelligence with EARs we need to configure
-                    the wildfly maven plugin to skip deployment for all modules. We then enable
-                    it specifically in the ear module. -->
-                <plugin>
-                    <groupId>org.wildfly.plugins</groupId>
-                    <artifactId>wildfly-maven-plugin</artifactId>
-                    <version>${version.wildfly.maven.plugin}</version>
-                    <inherited>true</inherited>
-                    <configuration>
-                        <skip>true</skip>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
     <modules>
-        <module>quotes-coins-ear</module>
-        <module>quotes-coins-ejb</module>
-        <module>quotes-coins-war</module>
+        <module>quotes-coins</module>
     </modules>
-
 </project>
