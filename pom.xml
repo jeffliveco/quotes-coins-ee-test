@@ -84,5 +84,6 @@
 
     <modules>
         <module>quotes-coins</module>
+        <module>qc-transversal</module>
     </modules>
 </project>
