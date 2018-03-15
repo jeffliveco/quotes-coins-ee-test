@@ -7,9 +7,12 @@ import com.quotescoins.data.ExchangeRateDAO;
 import com.quotescoins.data.impl.ExchangeDAOImpl;
 import com.quotescoins.data.impl.ExchangeRateDAOImpl;
 import com.quotescoins.dto.ExchangeDto;
+import com.quotescoins.dto.RateDto;
 import com.quotescoins.model.Exchange;
 import com.quotescoins.model.ExchangeRate;
+import com.quotescoins.model.Rate;
 import com.quotescoins.util.exception.AttributeRequiredException;
+import com.quotescoins.util.exception.InvalidAttributeException;
 import com.quotescoins.util.exception.business.BusinessCoreException;
 import com.quotescoins.util.exception.business.BusinessError;
 import com.quotescoins.util.exception.data.DataAccessException;
@@ -105,6 +108,40 @@ public class BusinessFacadeImpl implements BusinessFacadeLocal, BusinessFacadeRe
         }
     }
 
+    public RateDto getValueByBaseAndRate(String base, String rate, Float value){
+        try {
+            // 1. validate base parameter
+            this.validateBaseParameter(base, "BASE");
+
+            // 2. validate rate parameter
+            this.validateBaseParameter(rate, "RATE");
+
+            // 3. validate value
+            this.validateValueParameter(value);
+
+            Exchange data = exchangeService.getExchageByBase(base);
+            RateDto result = null;
+            if(data != null){
+                for(ExchangeRate exRate : data.getExchangeRates()){
+                    for(Rate rateData : exRate.getRates()){
+                        if(rateData.getActive()){
+                            result = new RateDto(rateData);
+                            result.setValue(result.getValue()*value);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        } catch (AttributeRequiredException e) {
+            throw new BusinessCoreException(e.getMessage(), e.getCause());
+        } catch (InvalidAttributeException e) {
+            throw new BusinessCoreException(e.getMessage(), e.getCause());
+        } catch (DataAccessException e){
+            throw new BusinessCoreException(e.getMessage(), e.getCause());
+        }
+    }
+
     private void validateBaseParameter(String base, String atribute) throws AttributeRequiredException {
         if(base == null) {
             BusinessError error = BusinessError.ATTRIBUTE_REQUIRED;
@@ -112,6 +149,19 @@ public class BusinessFacadeImpl implements BusinessFacadeLocal, BusinessFacadeRe
         } else if(base.isEmpty()) {
             BusinessError error = BusinessError.ATTRIBUTE_REQUIRED;
             throw new AttributeRequiredException(error.message() + ":" + atribute.toUpperCase());
+        }
+    }
+
+    private void validateValueParameter(Float value) throws AttributeRequiredException, InvalidAttributeException {
+        if(value == null) {
+            BusinessError error = BusinessError.ATTRIBUTE_REQUIRED;
+            throw new AttributeRequiredException(error.message() + ":VALUE");
+        } else if(value.isNaN()) {
+            BusinessError error = BusinessError.ATTRIBUTE_REQUIRED;
+            throw new AttributeRequiredException(error.message() + ":VALUE");
+        } else if(value < 0f){
+            BusinessError error = BusinessError.ATTRIBUTE_NO_VALID;
+            throw new InvalidAttributeException(error.message() + ":VALUE");
         }
     }
 }

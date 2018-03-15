@@ -50,7 +50,7 @@ public class ExchangeRateDAOImpl extends GenericDaoImpl<ExchangeRate, String> im
     public ExchangeRate getRateByExchange(String base, Exchange exchange) throws DataAccessException {
         try {
             // 1. set query
-            String mongoQL = "{ $and: [ { base: '" + base + "' }, { exchage: '" + exchange.getId() + "' }, { rates: { active: 'true' } } ] }";
+            String mongoQL = "{ $and: [ { base: '" + base + "' }, { exchage: '" + exchange.getId() + "' } ] }";
             Query queryHQL = getEntityManager().createNativeQuery(mongoQL, ExchangeRate.class);
             // 2. execute query and set results
             ExchangeRate result = (ExchangeRate) queryHQL.getSingleResult();
